@@ -6,7 +6,7 @@ const database = new EventosDatabase();
 
 export class EventosService{
     
-    listar(filtros) {
+    Listar(filtros) {
         let eventos = database.listarTodos(); 
 
         if (filtros.ativo !== undefined) {
@@ -33,8 +33,8 @@ export class EventosService{
         return eventos;
     };
     
-    buscarPorId(id) {
-        this.validateId(id);
+    BuscarPorId(id) {
+        this.ValidarId(id);
         const idNumerico = Number(id);
         const eventoPorId = database.buscarPorId(idNumerico);
         if (eventoPorId == null) {
@@ -43,26 +43,39 @@ export class EventosService{
         return eventoPorId;
     };
     
-    novoEvento(dados) {
+    NovoEvento(dados) {
         const validadorCriarEventos = new ValidadorCriacaoEvento(dados);
         validadorCriarEventos.Validar();
         const inserirEvento = database.inserir(dados);
         return inserirEvento;
     };
     
-    atualizaEvento(id, dados) {
-        const eventoAAtualizar = this.buscarPorId(id);
+    AtualizaEvento(id, dados) {
+        const eventoAAtualizar = this.BuscarPorId(id);
         const atualizarEvento = database.atualizar(id, dados);
         return atualizarEvento;
     };
 
     removerEvento(id) {
-        const eventoADeletar = this.buscarPorId(id);
+        const eventoADeletar = this.BuscarPorId(id);
         const idNumerico = Number(id);
         database.remover(idNumerico);
     };
 
-    validateId(id){
+    ReduzirVagasEvento(id){
+        const eventoAReduzirVagas = this.BuscarPorId(id);
+        const idNumerico = Number(id);
+        const eventoVagasAtualizadas = database.reduzirVaga(idNumerico);
+        return eventoVagasAtualizadas;
+    }
+
+    CancelarEvento(id){
+        const eventoParaAlterar = this.BuscarPorId(id);
+        eventoParaAlterar.ativo = false;
+        return eventoParaAlterar;
+    }
+
+    ValidarId(id){
         if (!id || isNaN(id) || id < 0) {
             throw new AppError('Id inválido.',400);
         };
